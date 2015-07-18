@@ -23,8 +23,8 @@ object EQLogParser {
     val damageMeter = new DamageMeter(windowPeriods = properties.getProperty("damage-meter-window-periods"), currentFightDelay = properties.getProperty("current-fight-delay").toInt)
     damageMeter.launch()
 
-    // Create LogTailer and being executing it. The LogTailer will pass new lines to DamageMeter object for processing
-    val listener = new LogTailer(damageMeter);
-    val tailer = Tailer.create(logFile, listener, 1000);
+    // Create LogTailer and being executing it. The LogTailer will pass new lines to DamageMeter object for .
+    val listener = new LogTailer(damageMeter)
+    val tailer = Tailer.create(logFile, listener, 1000, true)
   }
 }
