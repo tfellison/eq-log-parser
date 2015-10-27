@@ -1,12 +1,10 @@
-/**
- * Created by Taylor Ellison on 6/28/2015.
- */
-
 import scala.swing._
-import scala.sys.process._
-import scala.util.matching.Regex
-import java.time
 
+/** A module that displays damage per second information over various timeframes
+  *
+  * @param windowPeriods A string that represents the timeframes over which to display damage statistics
+  * @param currentFightDelay The time that must elapse without damage occurring for a fight to be considered complete; if/when new damage occurs after this delay, the damage will contribute to a new "current fight" damage value
+  */
 class DamageMeter(windowPeriods: String, currentFightDelay: Int) {
 
   private val RollingWindowDamageDescription = "Seconds"
@@ -38,12 +36,13 @@ class DamageMeter(windowPeriods: String, currentFightDelay: Int) {
     centerOnScreen()
   }
 
-  private var damageRecords = scala.collection.mutable.Map[Long,Int]()
-  private val damagePattern = "(?:You|non-melee|taken)(?:\\s|\\w)*?(\\d+)(?:\\s|\\w)*damage".r
+  private var damageRecords = scala.collection.mutable.Map[Long,Int]() // Stores record of each occurrence of damage: [timestamp, damage amount]
+  private val damagePattern = "(?:You|non-melee|taken)(?:\\s|\\w)*?(\\d+)(?:\\s|\\w)*damage".r // The regex pattern that will be used to identify damage in a log file line
 
   private var currentFightStart:Long = -1
   private var mostRecentDamage:Long = 0
 
+  /** Process a new log file line. If line represents damage done, store amount and timestamp of damage, and update current fight timestamps. */
   def processNewLine(line: String): Unit = {
 
     val currentTimestamp: Long = System.currentTimeMillis / 1000
@@ -56,9 +55,7 @@ class DamageMeter(windowPeriods: String, currentFightDelay: Int) {
     }
   }
 
-  /**
-   * Re-calculate all damage values and update label text values with new information
-   */
+  /** Re-calculate all damage values and update label text values with new information */
   private def updateOutputValues(): Unit = {
     val currentTimestamp: Long = System.currentTimeMillis / 1000
 
@@ -85,6 +82,7 @@ class DamageMeter(windowPeriods: String, currentFightDelay: Int) {
     }
   }
 
+  /** Store an occurrence of damage and associated timestamp */
   private def addDamageRecord(currentTimestamp: Long, damage: Int): Unit = {
     if (!damageRecords.contains(currentTimestamp)) {
       damageRecords.put(currentTimestamp, damage)
@@ -95,9 +93,7 @@ class DamageMeter(windowPeriods: String, currentFightDelay: Int) {
     println(currentTimestamp + " | " + damage) // debug
   }
 
-  /**
-   * Display the DamageMeter and begin it's execution
-   */
+  /** Display the DamageMeter and begin it's execution */
   def launch(): Unit = {
     updateOutputValues()
     mainFrame.visible = true

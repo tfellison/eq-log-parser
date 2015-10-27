@@ -1,12 +1,11 @@
 import java.io._
 import java.util.Properties
-import scala.collection.JavaConverters._
 import org.apache.commons.io.input.Tailer
-import org.apache.commons.io.input.TailerListener
 
-/**
- * Created by Taylor Ellison on 6/28/2015.
- */
+/** Main object of application for ingesting information from EverQuest log files. This information is passed to modules for processing, and resulting information is displayed to the user.
+  *
+  * As of 10/11/2015, DamageMeter is the only existing module type, but other module types may be added in the future.
+  */
 object EQLogParser {
 
   def main(args: Array[String]): Unit = {
@@ -23,7 +22,7 @@ object EQLogParser {
     val damageMeter = new DamageMeter(windowPeriods = properties.getProperty("damage-meter-window-periods"), currentFightDelay = properties.getProperty("current-fight-delay").toInt)
     damageMeter.launch()
 
-    // Create LogTailer and being executing it. The LogTailer will pass new lines to DamageMeter object for .
+    // Create LogTailer and being executing it. The LogTailer will pass new lines to DamageMeter object for processing.
     val listener = new LogTailer(damageMeter)
     val tailer = Tailer.create(logFile, listener, 1000, true)
   }
